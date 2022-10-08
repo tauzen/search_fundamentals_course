@@ -107,7 +107,7 @@ def index_file(file, index_name):
     root = tree.getroot()
     children = root.findall("./product")
     docs = []
-    for child in children:
+    for child in children[:10]:
         doc = {}
         for idx in range(0, len(mappings), 2):
             xpath_expr = mappings[idx]
@@ -116,7 +116,7 @@ def index_file(file, index_name):
         #print(doc)
         if 'productId' not in doc or len(doc['productId']) == 0:
             continue
-        #### Step 2.b: Create a valid OpenSearch Doc and bulk index 2000 docs at a time
+        client.index(index=index_name, body=doc, id=doc['productId'], refresh=True)
         the_doc = None
         docs.append(the_doc)
 
@@ -128,7 +128,7 @@ def index_file(file, index_name):
 @click.option('--workers', '-w', default=8, help="The number of workers to use to process files")
 def main(source_dir: str, index_name: str, workers: int):
 
-    files = glob.glob(source_dir + "/*.xml")
+    files = glob.glob(source_dir + "/*.xml")[:1]
     docs_indexed = 0
     start = perf_counter()
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
