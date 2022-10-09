@@ -106,21 +106,27 @@ def index_file(file, index_name):
     tree = etree.parse(file)
     root = tree.getroot()
     children = root.findall("./product")
-    docs = []
+
     for child in children[:10]:
-        doc = {}
-        for idx in range(0, len(mappings), 2):
-            xpath_expr = mappings[idx]
-            key = mappings[idx + 1]
-            doc[key] = child.xpath(xpath_expr)
-        #print(doc)
+        doc = convert_xml_doc_to_json(child)
+        # print(doc)
         if 'productId' not in doc or len(doc['productId']) == 0:
             continue
         client.index(index=index_name, body=doc, id=doc['productId'], refresh=True)
-        the_doc = None
-        docs.append(the_doc)
+        docs_indexed += 1
 
     return docs_indexed
+
+def convert_xml_doc_to_json(xml_doc):
+    if xml_doc is None:
+        return None
+    
+    doc = {}
+    for idx in range(0, len(mappings), 2):
+        xpath_expr = mappings[idx]
+        key = mappings[idx + 1]
+        doc[key] = xml_doc.xpath(xpath_expr)
+    return doc
 
 @click.command()
 @click.option('--source_dir', '-s', help='XML files source directory')
