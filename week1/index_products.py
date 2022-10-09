@@ -163,7 +163,7 @@ def index_file(file, index_name):
     root = tree.getroot()
     children = root.findall("./product")
 
-    for xmls_chunk in chunk(children[:10], 3):
+    for xmls_chunk in chunk(children, 2000):
         docs = map(lambda xml: convert_xml_doc_to_json(xml, index_name), xmls_chunk)
         docs = filter(lambda doc: doc is not None, docs)
         docs = list(docs)
@@ -210,7 +210,7 @@ def chunk(iterable, n):
 )
 def main(source_dir: str, index_name: str, workers: int):
 
-    files = glob.glob(source_dir + "/*.xml")[:1]
+    files = glob.glob(source_dir + "/*.xml")
     docs_indexed = 0
     start = perf_counter()
     with concurrent.futures.ProcessPoolExecutor(max_workers=workers) as executor:
