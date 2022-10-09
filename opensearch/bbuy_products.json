@@ -5,13 +5,7 @@
   "mappings": {
     "properties": {
       "active": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "type": "boolean"
       },
       "bestBuyItemId": {
         "type": "text",
@@ -50,7 +44,7 @@
         }
       },
       "categoryPathCount": {
-        "type": "float"
+        "type": "short"
       },
       "categoryPathIds": {
         "type": "text",
@@ -301,13 +295,7 @@
         "type": "float"
       },
       "salePrice": {
-        "type": "text",
-        "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
-          }
-        }
+        "type": "float"
       },
       "salesRankLongTerm": {
         "type": "text",
