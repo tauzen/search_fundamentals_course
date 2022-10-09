@@ -129,16 +129,45 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             "bool": {
                 "must": [
                     {
-                        "query_string": {
-                            "fields": [
-                                "name^100",
-                                "shortDescription^50",
-                                "longDescription^10",
-                                "department",
+                        "function_score": {
+                            "query": {
+                                "query_string": {
+                                    "query": user_query,
+                                    "fields": [
+                                        "name^100",
+                                        "shortDescription^50",
+                                        "longDescription^10",
+                                        "department",
+                                    ],
+                                    "phrase_slop": 3,
+                                }
+                            },
+                            "boost_mode": "multiply",
+                            "score_mode": "avg",
+                            "functions": [
+                                {
+                                    "field_value_factor": {
+                                        "field": "salesRankLongTerm",
+                                        "missing": 100000000,
+                                        "modifier": "reciprocal",
+                                    }
+                                },
+                                {
+                                    "field_value_factor": {
+                                        "field": "salesRankMediumTerm",
+                                        "missing": 100000000,
+                                        "modifier": "reciprocal",
+                                    }
+                                },
+                                {
+                                    "field_value_factor": {
+                                        "field": "salesRankShortTerm",
+                                        "missing": 100000000,
+                                        "modifier": "reciprocal",
+                                    }
+                                },
                             ],
-                            "query": user_query,
-                            "phrase_slop": 3,
-                        },
+                        }
                     },
                 ],
                 "filter": filters,
