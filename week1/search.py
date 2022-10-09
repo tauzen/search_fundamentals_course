@@ -130,7 +130,12 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
                 "must": [
                     {
                         "query_string": {
-                            "fields": ["name", "shortDescription", "longDescription"],
+                            "fields": [
+                                "name^100",
+                                "shortDescription^50",
+                                "longDescription^10",
+                                "department",
+                            ],
                             "query": user_query,
                             "phrase_slop": 3,
                         },
