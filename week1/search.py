@@ -133,7 +133,27 @@ def create_query(user_query, filters, sort="_score", sortDir="desc"):
             }
         },
         "aggs": {
-            #### Step 4.b.i: create the appropriate query and aggregations here
+            "regularPrice": {
+                "range": {
+                    "field": "regularPrice",
+                    "ranges": [
+                        {"to": 50},
+                        {"from": 50, "to": 100},
+                        {"from": 100, "to": 500},
+                        {"from": 500, "to": 1000},
+                        {"from": 1000},
+                    ],
+                }
+            },
+            "department": {
+                "terms": {
+                    "field": "department.keyword",
+                    "size": 10,
+                    "missing": "N/A",
+                    "min_doc_count": 0,
+                }
+            },
+            "missing_images": {"missing": {"field": "image.keyword"}},
         },
     }
     return query_obj
