@@ -163,18 +163,18 @@ def index_file(file, index_name):
     root = tree.getroot()
     children = root.findall("./product")
 
-    for child in children[:10]:
-        doc = convert_xml_doc_to_json(child)
-        # print(doc)
-        if "productId" not in doc or len(doc["productId"]) == 0:
-            continue
-        client.index(index=index_name, body=doc, id=doc["productId"], refresh=True)
-        docs_indexed += 1
+    for xmls_chunk in chunk(children[:10], 3):
+        docs = map(lambda xml: convert_xml_doc_to_json(xml, index_name), xmls_chunk)
+        docs = filter(lambda doc: doc is not None, docs)
+        docs = list(docs)
+
+        bulk(client, docs)
+        docs_indexed += len(docs)
 
     return docs_indexed
 
 
-def convert_xml_doc_to_json(xml_doc):
+def convert_xml_doc_to_json(xml_doc, index_name):
     if xml_doc is None:
         return None
 
@@ -183,6 +183,12 @@ def convert_xml_doc_to_json(xml_doc):
         xpath_expr = mappings[idx]
         key = mappings[idx + 1]
         doc[key] = xml_doc.xpath(xpath_expr)
+
+    if "productId" not in doc or len(doc["productId"]) == 0:
+        return None
+
+    doc["id"] = doc["productId"]
+    doc["_index"] = index_name
     return doc
 
 
