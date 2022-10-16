@@ -145,8 +145,26 @@ def create_query(
 def add_spelling_suggestions(query_obj, user_query):
     query_obj["suggest"] = {
         "text": user_query,
-        "phrase_suggest": {},
-        "term_suggest": {},
+        "phrase_suggest": {
+            "phrase": {
+                "field": "suggest.trigrams",
+                "direct_generator": [
+                    {
+                        "field": "suggest.trigrams",
+                        "min_word_length": 2,
+                        "suggest_mode": "popular",
+                    }
+                ],
+                "highlight": {"pre_tag": "<em>", "post_tag": "</em>"},
+            }
+        },
+        "term_suggest": {
+            "term": {
+                "suggest_mode": "popular",
+                "min_word_length": 3,
+                "field": "suggest.text",
+            }
+        },
     }
 
 
