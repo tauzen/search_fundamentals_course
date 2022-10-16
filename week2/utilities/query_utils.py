@@ -211,3 +211,14 @@ def add_aggs(query_obj):
             "aggs": {"price_stats": {"stats": {"field": "regularPrice"}}},
         },
     }
+
+
+def create_autocomplete_query(prefix):
+    return {
+        "suggest": {
+            "autocomplete": {
+                "prefix": prefix,
+                "completion": {"field": "suggest", "skip_duplicates": False},
+            }
+        }
+    }
