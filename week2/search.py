@@ -73,9 +73,11 @@ def autocomplete():
             type = request.args.get(
                 "type", "queries"
             )  # If type == queries, this is an autocomplete request, else if products, it's an instant search request.
-            ##### W2, L3, S1
-            search_response = None
-            print("TODO: implement autocomplete AND instant search")
+            index = "bbuy_queries" if type == "queries" else "bbuy_products"
+            query_obj = qu.create_autocomplete_query(prefix)
+
+            opensearch = get_opensearch()
+            search_response = opensearch.search(body=query_obj, index=index)
             if (
                 search_response
                 and search_response["suggest"]["autocomplete"]
